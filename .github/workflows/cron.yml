@@ -1,15 +1,32 @@
-name: Base44 Auto Import
+name: Import Annonces
 
 on:
   schedule:
-    - cron: "0 */6 * * *"   # Toutes les 6 heures
+    - cron: "0 6 * * *"   # Tous les jours à 6h du matin
   workflow_dispatch:
 
 jobs:
-  run-import:
+  import:
     runs-on: ubuntu-latest
     steps:
-      - name: Appel API Base44
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
         run: |
-          curl -X POST "https://app.base44.com/apps/691b2478e6c5bfcebe5518f3/editor/preview/importsources" \
-          -H "Authorization: Bearer immo_hBH7n1NWsSMjbqkUspNPs5iBjf5vPBqD"
+          pip install requests beautifulsoup4
+
+      - name: Run scraper
+        run: |
+          python scraper.py
+
+      - name: Send data to Base44
+        run: |
+          curl -X POST "https://app.base44.com/apps/691b2478e6c5bfcebe5518f3/editor/preview/importsources?secret=immo_hBH7n1NWsSMjbqkUspNPs5iBjf5vPBqD" \
+          -H "Content-Type: application/json" \
+          --data-binary @annonces.json
