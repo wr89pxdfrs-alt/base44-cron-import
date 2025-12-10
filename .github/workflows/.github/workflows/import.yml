@@ -1,15 +1,16 @@
-name: Import Annonces
+name: Import Annonces Automatique
 
 on:
   schedule:
-    - cron: "0 6 * * *"   # Tous les jours à 6h du matin
+    - cron: "0 6 * * *"
   workflow_dispatch:
 
 jobs:
   import:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Setup Python
@@ -21,12 +22,26 @@ jobs:
         run: |
           pip install requests beautifulsoup4
 
+      - name: Check files
+        run: |
+          echo "=== LISTE DES FICHIERS ==="
+          ls -la
+          echo "=========================="
+
       - name: Run scraper
         run: |
           python scraper.py
 
-      - name: Send data to Base44
+      - name: Verify JSON output
         run: |
-          curl -X POST "https://app.base44.com/apps/691b2478e6c5bfcebe5518f3/editor/preview/importsources?secret=immo_hBH7n1NWsSMjbqkUspNPs5iBjf5vPBqD" \
+          if [ ! -f "annonces.json" ]; then
+            echo "ERREUR: annonces.json non généré"
+            exit 1
+          fi
+
+      - name: Send data to Base44 (API PUBLIQUE)
+        run: |
+          curl -v -X POST "https://immo-tracker-france.base44.app?secret=TA_NOUVELLE_CLE" \
           -H "Content-Type: application/json" \
+          --fail \
           --data-binary @annonces.json
