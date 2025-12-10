@@ -1,0 +1,15 @@
+name: Base44 Auto Import
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # Toutes les 6 heures
+  workflow_dispatch:
+
+jobs:
+  run-import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Appel API Base44
+        run: |
+          curl -X POST "https://TON-ENDPOINT-BASE44.com/import" \
+          -H "Authorization: Bearer TON_API_KEY"
