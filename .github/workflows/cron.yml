@@ -12,4 +12,4 @@ jobs:
       - name: Appel API Base44
         run: |
           curl -X POST "https://app.base44.com/apps/691b2478e6c5bfcebe5518f3/editor/preview/importsources" \
-          -H "Authorization: Bearer TON_API_KEY"
+          -H "Authorization: Bearer immo_hBH7n1NWsSMjbqkUspNPs5iBjf5vPBqD"
