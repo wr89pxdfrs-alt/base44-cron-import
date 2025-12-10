@@ -6,23 +6,28 @@ from datetime import datetime
 
 OUTPUT_FILE = "annonces.json"
 
-def scrape_source_example():
-    url = "https://example.com/annonces"  # REMPLACE PAR TES SOURCES AUTORISÉES
+def scrape_demo():
+    # SITE DE TEST QUI RETOURNE DES DONNÉES EN HTML (ACCESSIBLE)
+    url = "https://books.toscrape.com"   # SITE D'ENTRAÎNEMENT SCRAPING
     r = requests.get(url, timeout=20)
+    
     soup = BeautifulSoup(r.text, "html.parser")
 
     annonces = []
 
-    for item in soup.select(".annonce"):
+    for item in soup.select(".product_pod"):
         try:
+            title = item.select_one("h3 a")["title"]
+            price = item.select_one(".price_color").get_text(strip=True)
+
             annonces.append({
-                "titre": item.select_one(".title").get_text(strip=True),
-                "prix": item.select_one(".price").get_text(strip=True),
-                "ville": item.select_one(".city").get_text(strip=True),
-                "surface": item.select_one(".surface").get_text(strip=True),
-                "url_originale": item.select_one("a")["href"],
+                "titre": title,
+                "prix": price,
+                "ville": "TestCity",
+                "surface": None,
+                "url_originale": url,
                 "photos": [],
-                "source": "example_source",
+                "source": "demo_scraper",
                 "date_import": datetime.utcnow().isoformat()
             })
         except:
@@ -30,14 +35,15 @@ def scrape_source_example():
 
     return annonces
 
-def main():
-    all_annonces = []
-    all_annonces.extend(scrape_source_example())
 
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+def main():
+    all_annonces = scrape_demo()
+
+    with open(OUTPUT_FILE, "w", encoding="utf8") as f:
         json.dump(all_annonces, f, ensure_ascii=False, indent=2)
 
     print(f"{len(all_annonces)} annonces exportées")
+
 
 if __name__ == "__main__":
     main()
