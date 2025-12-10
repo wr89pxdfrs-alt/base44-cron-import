@@ -1,0 +1,43 @@
+# scraper.py
+import json
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime
+
+OUTPUT_FILE = "annonces.json"
+
+def scrape_source_example():
+    url = "https://example.com/annonces"  # REMPLACE PAR TES SOURCES AUTORISÉES
+    r = requests.get(url, timeout=20)
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    annonces = []
+
+    for item in soup.select(".annonce"):
+        try:
+            annonces.append({
+                "titre": item.select_one(".title").get_text(strip=True),
+                "prix": item.select_one(".price").get_text(strip=True),
+                "ville": item.select_one(".city").get_text(strip=True),
+                "surface": item.select_one(".surface").get_text(strip=True),
+                "url_originale": item.select_one("a")["href"],
+                "photos": [],
+                "source": "example_source",
+                "date_import": datetime.utcnow().isoformat()
+            })
+        except:
+            pass
+
+    return annonces
+
+def main():
+    all_annonces = []
+    all_annonces.extend(scrape_source_example())
+
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump(all_annonces, f, ensure_ascii=False, indent=2)
+
+    print(f"{len(all_annonces)} annonces exportées")
+
+if __name__ == "__main__":
+    main()
