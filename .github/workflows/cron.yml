@@ -11,5 +11,5 @@ jobs:
     steps:
       - name: Appel API Base44
         run: |
-          curl -X POST "https://TON-ENDPOINT-BASE44.com/import" \
+          curl -X POST "https://app.base44.com/apps/691b2478e6c5bfcebe5518f3/editor/preview/importsources" \
           -H "Authorization: Bearer TON_API_KEY"
